@@ -1,32 +1,39 @@
-"use client"
+"use client";
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import dynamic from 'next/dynamic'
-import ReactMarkdown from 'react-markdown'
-import type { Workshop } from '@/lib/types'
-import 'easymde/dist/easymde.min.css'
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
+import ReactMarkdown from "react-markdown";
+import type { Workshop } from "@/lib/types";
+import "easymde/dist/easymde.min.css";
 
-const SimpleMDE = dynamic(() => import('react-simplemde-editor'), { ssr: false })
+const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
+  ssr: false,
+});
 
 interface WorkshopFormProps {
-  workshop?: Workshop
-  onSubmit: (data: Partial<Workshop>) => Promise<void>
+  workshop?: Workshop;
+  onSubmit: (data: Partial<Workshop>) => Promise<void>;
 }
 
-export default function WorkshopForm({ workshop, onSubmit }: WorkshopFormProps) {
-  const router = useRouter()
-  const [title, setTitle] = useState(workshop?.title || '')
-  const [description, setDescription] = useState(workshop?.description || '')
-  const [difficulty, setDifficulty] = useState<'Beginner' | 'Intermediate' | 'Advanced'>(workshop?.difficulty || 'Beginner')
-  const [duration, setDuration] = useState(workshop?.duration || '')
-  const [imageUrl, setImageUrl] = useState(workshop?.image_url || '')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showPreview, setShowPreview] = useState(false)
+export default function WorkshopForm({
+  workshop,
+  onSubmit,
+}: WorkshopFormProps) {
+  const router = useRouter();
+  const [title, setTitle] = useState(workshop?.title || "");
+  const [description, setDescription] = useState(workshop?.description || "");
+  const [difficulty, setDifficulty] = useState<
+    "Beginner" | "Intermediate" | "Advanced"
+  >(workshop?.difficulty || "Beginner");
+  const [duration, setDuration] = useState(workshop?.duration || "");
+  const [imageUrl, setImageUrl] = useState(workshop?.image_url || "");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
     try {
       await onSubmit({
@@ -35,21 +42,24 @@ export default function WorkshopForm({ workshop, onSubmit }: WorkshopFormProps) 
         difficulty,
         duration,
         image_url: imageUrl || null,
-      })
-      router.push('/workshops')
-      router.refresh()
+      });
+      router.push("/workshops");
+      router.refresh();
     } catch (error) {
-      console.error('Error submitting form:', error)
-      alert('Failed to save workshop')
+      console.error("Error submitting form:", error);
+      alert("Failed to save workshop");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
       <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-900">
+        <label
+          htmlFor="title"
+          className="block text-sm font-medium text-gray-900"
+        >
           Title
         </label>
         <input
@@ -58,43 +68,58 @@ export default function WorkshopForm({ workshop, onSubmit }: WorkshopFormProps) 
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           required
-          className="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
+          className="mt-1 sm:mt-2 block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm sm:text-sm sm:leading-6 px-3"
         />
       </div>
 
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <div>
+          <label
+            htmlFor="difficulty"
+            className="block text-sm font-medium text-gray-900"
+          >
+            Difficulty
+          </label>
+          <select
+            id="difficulty"
+            value={difficulty}
+            onChange={(e) =>
+              setDifficulty(
+                e.target.value as "Beginner" | "Intermediate" | "Advanced",
+              )
+            }
+            className="mt-1 sm:mt-2 block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm sm:text-sm sm:leading-6 px-3"
+          >
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+          </select>
+        </div>
+
+        <div>
+          <label
+            htmlFor="duration"
+            className="block text-sm font-medium text-gray-900"
+          >
+            Duration
+          </label>
+          <input
+            type="text"
+            id="duration"
+            value={duration}
+            onChange={(e) => setDuration(e.target.value)}
+            placeholder="e.g., 2 hours"
+            required
+            className="mt-1 sm:mt-2 block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm sm:text-sm sm:leading-6 px-3"
+          />
+        </div>
+      </div>
+
       <div>
-        <label htmlFor="difficulty" className="block text-sm font-medium text-gray-900">
-          Difficulty
-        </label>
-        <select
-          id="difficulty"
-          value={difficulty}
-          onChange={(e) => setDifficulty(e.target.value as 'Beginner' | 'Intermediate' | 'Advanced')}
-          className="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
+        <label
+          htmlFor="imageUrl"
+          className="block text-sm font-medium text-gray-900"
         >
-          <option value="Beginner">Beginner</option>
-          <option value="Intermediate">Intermediate</option>
-          <option value="Advanced">Advanced</option>
-        </select>
-      </div>
-
-      <div>
-        <label htmlFor="duration" className="block text-sm font-medium text-gray-900">
-          Duration
-        </label>
-        <input
-          type="text"
-          id="duration"
-          value={duration}
-          onChange={(e) => setDuration(e.target.value)}
-          placeholder="e.g., 2 hours"
-          required
-          className="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-900">
           Image URL (optional)
         </label>
         <input
@@ -103,7 +128,7 @@ export default function WorkshopForm({ workshop, onSubmit }: WorkshopFormProps) 
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
           placeholder="https://example.com/image.jpg"
-          className="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
+          className="mt-1 sm:mt-2 block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm sm:text-sm sm:leading-6 px-3"
         />
       </div>
 
@@ -115,29 +140,47 @@ export default function WorkshopForm({ workshop, onSubmit }: WorkshopFormProps) 
           <button
             type="button"
             onClick={() => setShowPreview(!showPreview)}
-            className="text-sm text-indigo-600 hover:text-indigo-500"
+            className="text-sm text-indigo-600 hover:text-indigo-500 font-medium"
           >
-            {showPreview ? 'Hide Preview' : 'Show Preview'}
+            {showPreview ? "Hide Preview" : "Show Preview"}
           </button>
         </div>
-        
-        <div className="grid grid-cols-1 gap-4">
-          <div>
+
+        <div className="space-y-4">
+          <div className="editor-wrapper">
             <SimpleMDE
               value={description}
               onChange={setDescription}
               options={{
                 spellChecker: false,
                 status: false,
-                toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'code', '|', 'preview', 'guide'],
-                placeholder: 'Enter workshop description with markdown formatting...',
+                toolbar: [
+                  "bold",
+                  "italic",
+                  "heading",
+                  "|",
+                  "quote",
+                  "unordered-list",
+                  "ordered-list",
+                  "|",
+                  "link",
+                  "code",
+                  "|",
+                  "preview",
+                  "guide",
+                ],
+                placeholder:
+                  "Enter workshop description with markdown formatting...",
+                minHeight: "200px",
               }}
             />
           </div>
-          
+
           {showPreview && (
-            <div className="border rounded-md p-4 bg-gray-50">
-              <h3 className="text-sm font-medium text-gray-900 mb-2">Preview</h3>
+            <div className="border rounded-md p-4 bg-gray-50 overflow-auto">
+              <h3 className="text-sm font-medium text-gray-900 mb-2">
+                Preview
+              </h3>
               <div className="prose prose-sm max-w-none">
                 <ReactMarkdown>{description}</ReactMarkdown>
               </div>
@@ -146,22 +189,26 @@ export default function WorkshopForm({ workshop, onSubmit }: WorkshopFormProps) 
         </div>
       </div>
 
-      <div className="flex gap-3 pt-4">
+      <div className="flex flex-col sm:flex-row gap-3 pt-4">
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
+          className="w-full sm:w-auto rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-50"
         >
-          {isSubmitting ? 'Saving...' : (workshop ? 'Update Workshop' : 'Create Workshop')}
+          {isSubmitting
+            ? "Saving..."
+            : workshop
+              ? "Update Workshop"
+              : "Create Workshop"}
         </button>
         <button
           type="button"
           onClick={() => router.back()}
-          className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+          className="w-full sm:w-auto rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
         >
           Cancel
         </button>
       </div>
     </form>
-  )
+  );
 }

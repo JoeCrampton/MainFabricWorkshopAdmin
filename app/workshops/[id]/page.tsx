@@ -1,42 +1,42 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
-import WorkshopForm from '@/components/WorkshopForm'
-import { createClient } from '@/lib/supabase-client'
-import type { Workshop } from '@/lib/types'
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import WorkshopForm from "@/components/WorkshopForm";
+import { createClient } from "@/lib/supabase-client";
+import type { Workshop } from "@/lib/types";
 
 export default function EditWorkshopPage() {
-  const params = useParams()
-  const workshopId = params.id as string
-  const [workshop, setWorkshop] = useState<Workshop | null>(null)
-  const [loading, setLoading] = useState(true)
+  const params = useParams();
+  const workshopId = params.id as string;
+  const [workshop, setWorkshop] = useState<Workshop | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadWorkshop() {
-      const supabase = createClient()
+      const supabase = createClient();
       const { data, error } = await supabase
-        .from('workshops')
-        .select('*')
-        .eq('id', workshopId)
-        .single()
+        .from("workshops")
+        .select("*")
+        .eq("id", workshopId)
+        .single();
 
       if (error) {
-        console.error('Error loading workshop:', error)
+        console.error("Error loading workshop:", error);
       } else {
-        setWorkshop(data)
+        setWorkshop(data);
       }
-      setLoading(false)
+      setLoading(false);
     }
 
-    loadWorkshop()
-  }, [workshopId])
+    loadWorkshop();
+  }, [workshopId]);
 
   const handleSubmit = async (data: Partial<Workshop>) => {
-    const supabase = createClient()
-    
+    const supabase = createClient();
+
     const { error } = await supabase
-      .from('workshops')
+      .from("workshops")
       .update({
         title: data.title,
         description: data.description,
@@ -45,13 +45,13 @@ export default function EditWorkshopPage() {
         duration: data.duration,
         updated_at: new Date().toISOString(),
       })
-      .eq('id', workshopId)
+      .eq("id", workshopId);
 
     if (error) {
-      console.error('Error updating workshop:', error)
-      throw error
+      console.error("Error updating workshop:", error);
+      throw error;
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -60,7 +60,7 @@ export default function EditWorkshopPage() {
           <p className="text-gray-500">Loading workshop...</p>
         </div>
       </div>
-    )
+    );
   }
 
   if (!workshop) {
@@ -70,13 +70,15 @@ export default function EditWorkshopPage() {
           <p className="text-gray-500">Workshop not found</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-semibold text-gray-900">Edit Workshop</h1>
+    <div>
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">
+          Edit Workshop
+        </h1>
         <p className="mt-2 text-sm text-gray-700">
           Update workshop information and description
         </p>
@@ -88,5 +90,5 @@ export default function EditWorkshopPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

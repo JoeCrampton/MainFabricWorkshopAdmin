@@ -3,13 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import ReactMarkdown from "react-markdown";
 import type { Workshop } from "@/lib/types";
-import "easymde/dist/easymde.min.css";
+import "@uiw/react-md-editor/markdown-editor.css";
+import "@uiw/react-markdown-preview/markdown.css";
 
-const SimpleMDE = dynamic(() => import("react-simplemde-editor"), {
-  ssr: false,
-});
+const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
 interface WorkshopFormProps {
   workshop?: Workshop;
@@ -29,7 +27,6 @@ export default function WorkshopForm({
   const [duration, setDuration] = useState(workshop?.duration || "");
   const [imageUrl, setImageUrl] = useState(workshop?.image_url || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -133,59 +130,21 @@ export default function WorkshopForm({
       </div>
 
       <div>
-        <div className="flex justify-between items-center mb-2">
-          <label className="block text-sm font-medium text-gray-900">
-            Description (Markdown)
-          </label>
-          <button
-            type="button"
-            onClick={() => setShowPreview(!showPreview)}
-            className="text-sm text-indigo-600 hover:text-indigo-500 font-medium"
-          >
-            {showPreview ? "Hide Preview" : "Show Preview"}
-          </button>
-        </div>
+        <label className="block text-sm font-medium text-gray-900 mb-2">
+          Description (Markdown)
+        </label>
 
-        <div className="space-y-4">
-          <div className="editor-wrapper">
-            <SimpleMDE
-              value={description}
-              onChange={setDescription}
-              options={{
-                spellChecker: false,
-                status: false,
-                toolbar: [
-                  "bold",
-                  "italic",
-                  "heading",
-                  "|",
-                  "quote",
-                  "unordered-list",
-                  "ordered-list",
-                  "|",
-                  "link",
-                  "code",
-                  "|",
-                  "preview",
-                  "guide",
-                ],
-                placeholder:
-                  "Enter workshop description with markdown formatting...",
-                minHeight: "200px",
-              }}
-            />
-          </div>
-
-          {showPreview && (
-            <div className="border rounded-md p-4 bg-gray-50 overflow-auto">
-              <h3 className="text-sm font-medium text-gray-900 mb-2">
-                Preview
-              </h3>
-              <div className="prose prose-sm max-w-none">
-                <ReactMarkdown>{description}</ReactMarkdown>
-              </div>
-            </div>
-          )}
+        <div data-color-mode="light">
+          <MDEditor
+            value={description}
+            onChange={(value) => setDescription(value || "")}
+            preview="edit"
+            height={300}
+            textareaProps={{
+              placeholder:
+                "Enter workshop description with markdown formatting...",
+            }}
+          />
         </div>
       </div>
 

@@ -1,0 +1,220 @@
+"use client"
+
+import { useState } from "react"
+import dynamic from "next/dynamic"
+import ReactMarkdown from "react-markdown"
+import { createClient } from "@/lib/supabase-client"
+import type { WorkshopResource } from "@/lib/types"
+import "easymde/dist/easymde.min.css"
+
+const SimpleMDE = dynamic(() => import("react-simplemde-editor"), { ssr: false })
+
+interface ResourceFormProps {
+  workshopId: string
+  resource?: WorkshopResource
+  onClose: () => void
+}
+
+export default function ResourceForm({ workshopId, resource, onClose }: ResourceFormProps) {
+  const [title, setTitle] = useState(resource?.title || "")
+  const [type, setType] = useState<"video" | "image" | "instruction" | "pdf">(resource?.type || "instruction")
+  const [url, setUrl] = useState(resource?.url || "")
+  const [videoUrl, setVideoUrl] = useState(resource?.video_url || "")
+  const [description, setDescription] = useState(resource?.description || "")
+  const [thumbnailUrl, setThumbnailUrl] = useState(resource?.thumbnail_url || "")
+  const [displayOrder, setDisplayOrder] = useState(resource?.display_order || 0)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showPreview, setShowPreview] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+
+    try {
+      const supabase = createClient()
+      
+      const resourceData = {
+        workshop_id: workshopId,
+        title,
+        type,
+        url: url || null,
+        video_url: videoUrl || null,
+        description: description || null,
+        thumbnail_url: thumbnailUrl || null,
+        display_order: displayOrder,
+      }
+
+      let error
+      
+      if (resource) {
+        const result = await supabase
+          .from("workshop_resources")
+          .update(resourceData)
+          .eq("id", resource.id)
+        error = result.error
+      } else {
+        const result = await supabase
+          .from("workshop_resources")
+          .insert([resourceData])
+        error = result.error
+      }
+
+      if (error) {
+        console.error("Error saving resource:", error)
+        alert("Failed to save resource")
+      } else {
+        onClose()
+      }
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div>
+        <label htmlFor="title" className="block text-sm font-medium text-gray-900">
+          Title
+        </label>
+        <input
+          type="text"
+          id="title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+          className="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="type" className="block text-sm font-medium text-gray-900">
+          Type
+        </label>
+        <select
+          id="type"
+          value={type}
+          onChange={(e) => setType(e.target.value as "video" | "image" | "instruction" | "pdf")}
+          className="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
+        >
+          <option value="instruction">Instruction</option>
+          <option value="video">Video</option>
+          <option value="image">Image</option>
+          <option value="pdf">PDF</option>
+        </select>
+      </div>
+
+      <div>
+        <label htmlFor="displayOrder" className="block text-sm font-medium text-gray-900">
+          Display Order
+        </label>
+        <input
+          type="number"
+          id="displayOrder"
+          value={displayOrder}
+          onChange={(e) => setDisplayOrder(parseInt(e.target.value))}
+          className="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="url" className="block text-sm font-medium text-gray-900">
+          Resource URL
+        </label>
+        <input
+          type="url"
+          id="url"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://example.com/resource"
+          className="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
+        />
+      </div>
+
+      {type === "video" && (
+        <div>
+          <label htmlFor="videoUrl" className="block text-sm font-medium text-gray-900">
+            Video URL
+          </label>
+          <input
+            type="url"
+            id="videoUrl"
+            value={videoUrl}
+            onChange={(e) => setVideoUrl(e.target.value)}
+            placeholder="https://example.com/video.mp4"
+            className="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
+          />
+        </div>
+      )}
+
+      <div>
+        <label htmlFor="thumbnailUrl" className="block text-sm font-medium text-gray-900">
+          Thumbnail URL
+        </label>
+        <input
+          type="url"
+          id="thumbnailUrl"
+          value={thumbnailUrl}
+          onChange={(e) => setThumbnailUrl(e.target.value)}
+          placeholder="https://example.com/thumbnail.jpg"
+          className="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-3"
+        />
+      </div>
+
+      <div>
+        <div className="flex justify-between items-center mb-2">
+          <label className="block text-sm font-medium text-gray-900">
+            Description
+          </label>
+          <button
+            type="button"
+            onClick={() => setShowPreview(!showPreview)}
+            className="text-sm text-indigo-600 hover:text-indigo-500"
+          >
+            {showPreview ? "Hide Preview" : "Show Preview"}
+          </button>
+        </div>
+        
+        <div className="grid grid-cols-1 gap-4">
+          <div>
+            <SimpleMDE
+              value={description}
+              onChange={setDescription}
+              options={{
+                spellChecker: false,
+                status: false,
+                toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "code"],
+                placeholder: "Enter resource description...",
+              }}
+            />
+          </div>
+          
+          {showPreview && (
+            <div className="border rounded-md p-4 bg-gray-50">
+              <h3 className="text-sm font-medium text-gray-900 mb-2">Preview</h3>
+              <div className="prose prose-sm max-w-none">
+                <ReactMarkdown>{description}</ReactMarkdown>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="flex gap-3 pt-4">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 disabled:opacity-50"
+        >
+          {isSubmitting ? "Saving..." : (resource ? "Update Resource" : "Create Resource")}
+        </button>
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  )
+}

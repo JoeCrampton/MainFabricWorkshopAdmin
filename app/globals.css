@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
+/* Force light mode - disable dark mode */
 :root {
-    --background: #ffffff;
+    --background: #f9fafb;
     --foreground: #171717;
+    color-scheme: light;
 }
 
 @theme inline {
@@ -12,45 +14,10 @@
     --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background: #0a0a0a;
-        --foreground: #ededed;
-    }
-}
-
 body {
     background: var(--background);
     color: var(--foreground);
     font-family: Arial, Helvetica, sans-serif;
-}
-
-/* Mobile-friendly markdown editor styles */
-.editor-wrapper .EasyMDEContainer {
-    @media (max-width: 640px) {
-        font-size: 14px;
-    }
-}
-
-.editor-wrapper .EasyMDEContainer .CodeMirror {
-    min-height: 200px;
-    @media (max-width: 640px) {
-        min-height: 150px;
-        font-size: 14px;
-    }
-}
-
-.editor-wrapper .editor-toolbar {
-    @media (max-width: 640px) {
-        padding: 8px 4px;
-    }
-}
-
-.editor-wrapper .editor-toolbar button {
-    @media (max-width: 640px) {
-        width: 28px !important;
-        height: 28px !important;
-    }
 }
 
 /* Improve touch targets on mobile */

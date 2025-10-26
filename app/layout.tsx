@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Navigation from "@/components/Navigation";
 import "./globals.css";
@@ -18,13 +18,40 @@ export const metadata: Metadata = {
   description: "Admin panel for managing workshops and resources",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  themeColor: "#ffffff",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="light">
+      <head>
+        <meta name="color-scheme" content="light" />
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `
+            /* Disable iOS form navigation accessory bar */
+            input, textarea, select {
+              -webkit-user-select: auto !important;
+            }
+
+            @supports (-webkit-touch-callout: none) {
+              input:focus, textarea:focus, select:focus {
+                font-size: 16px;
+              }
+            }
+          `,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}
       >

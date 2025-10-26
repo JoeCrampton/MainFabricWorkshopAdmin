@@ -1,13 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import dynamic from "next/dynamic";
 import { createClient } from "@/lib/supabase-client";
 import type { WorkshopResource } from "@/lib/types";
-import "@uiw/react-md-editor/markdown-editor.css";
-import "@uiw/react-markdown-preview/markdown.css";
-
-const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
+import MarkdownEditor from "./MarkdownEditor";
 
 interface ResourceFormProps {
   workshopId: string;
@@ -198,17 +194,12 @@ export default function ResourceForm({
           Description (Markdown)
         </label>
 
-        <div data-color-mode="light">
-          <MDEditor
-            value={description}
-            onChange={(value) => setDescription(value || "")}
-            preview="edit"
-            height={250}
-            textareaProps={{
-              placeholder: "Enter resource description...",
-            }}
-          />
-        </div>
+        <MarkdownEditor
+          value={description}
+          onChange={setDescription}
+          placeholder="Enter resource description..."
+          height={250}
+        />
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 pt-4">

@@ -2,12 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import dynamic from "next/dynamic";
 import type { Workshop } from "@/lib/types";
-import "@uiw/react-md-editor/markdown-editor.css";
-import "@uiw/react-markdown-preview/markdown.css";
-
-const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
+import MarkdownEditor from "./MarkdownEditor";
 
 interface WorkshopFormProps {
   workshop?: Workshop;
@@ -134,18 +130,12 @@ export default function WorkshopForm({
           Description (Markdown)
         </label>
 
-        <div data-color-mode="light">
-          <MDEditor
-            value={description}
-            onChange={(value) => setDescription(value || "")}
-            preview="edit"
-            height={300}
-            textareaProps={{
-              placeholder:
-                "Enter workshop description with markdown formatting...",
-            }}
-          />
-        </div>
+        <MarkdownEditor
+          value={description}
+          onChange={setDescription}
+          placeholder="Enter workshop description with markdown formatting..."
+          height={300}
+        />
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 pt-4">

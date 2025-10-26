@@ -120,7 +120,7 @@ export default function WorkshopForm({ workshop, onSubmit }: WorkshopFormProps) 
             {showPreview ? 'Hide Preview' : 'Show Preview'}
           </button>
         </div>
-        
+
         <div className="grid grid-cols-1 gap-4">
           <div>
             <SimpleMDE
@@ -129,12 +129,12 @@ export default function WorkshopForm({ workshop, onSubmit }: WorkshopFormProps) 
               options={{
                 spellChecker: false,
                 status: false,
-                toolbar: ['bold', 'italic', 'heading', '|', 'quote', 'unordered-list', 'ordered-list', '|', 'link', 'code', '|', 'preview', 'guide'],
+                toolbar: ['bold', 'italic', 'heading', '|', 'unordered-list', 'ordered-list', '|', 'link', 'code', '|', 'preview', 'guide'],
                 placeholder: 'Enter workshop description with markdown formatting...',
               }}
             />
           </div>
-          
+
           {showPreview && (
             <div className="border rounded-md p-4 bg-gray-50">
               <h3 className="text-sm font-medium text-gray-900 mb-2">Preview</h3>

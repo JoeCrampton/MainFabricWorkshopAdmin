@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 import WorkshopForm from "@/components/WorkshopForm";
 import { createClient } from "@/lib/supabase-client";
 import type { Workshop } from "@/lib/types";
@@ -76,12 +77,30 @@ export default function EditWorkshopPage() {
   return (
     <div>
       <div className="mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">
-          Edit Workshop
-        </h1>
-        <p className="mt-2 text-sm text-gray-700">
-          Update workshop information and description
-        </p>
+        <div className="sm:flex sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-semibold text-gray-900">
+              Edit Workshop
+            </h1>
+            <p className="mt-2 text-sm text-gray-700">
+              Update workshop information and description
+            </p>
+          </div>
+          <div className="mt-4 sm:mt-0 flex flex-col sm:flex-row gap-2 sm:gap-3">
+            <Link
+              href={`/workshops/${workshopId}/resources`}
+              className="rounded-md bg-white px-4 py-2 text-center text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            >
+              Manage Resources
+            </Link>
+            <Link
+              href={`/workshops/${workshopId}/updates`}
+              className="rounded-md bg-white px-4 py-2 text-center text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            >
+              Manage Updates
+            </Link>
+          </div>
+        </div>
       </div>
 
       <div className="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl">

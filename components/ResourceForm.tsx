@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase-client";
 import type { WorkshopResource } from "@/lib/types";
 import MarkdownEditor from "./MarkdownEditor";
+import ImageUpload from "./ImageUpload";
 
 interface ResourceFormProps {
   workshopId: string;
@@ -136,22 +137,31 @@ export default function ResourceForm({
         </div>
       </div>
 
-      <div>
-        <label
-          htmlFor="url"
-          className="block text-sm font-medium text-gray-900"
-        >
-          Resource URL
-        </label>
-        <input
-          type="url"
-          id="url"
+      {type === "image" ? (
+        <ImageUpload
           value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="https://example.com/resource"
-          className="mt-1 sm:mt-2 block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm sm:text-sm sm:leading-6 px-3"
+          onChange={setUrl}
+          label="Resource Image"
+          bucket="workshop-resources"
         />
-      </div>
+      ) : (
+        <div>
+          <label
+            htmlFor="url"
+            className="block text-sm font-medium text-gray-900"
+          >
+            Resource URL
+          </label>
+          <input
+            type="url"
+            id="url"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="https://example.com/resource"
+            className="mt-1 sm:mt-2 block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm sm:text-sm sm:leading-6 px-3"
+          />
+        </div>
+      )}
 
       {type === "video" && (
         <div>
@@ -172,22 +182,12 @@ export default function ResourceForm({
         </div>
       )}
 
-      <div>
-        <label
-          htmlFor="thumbnailUrl"
-          className="block text-sm font-medium text-gray-900"
-        >
-          Thumbnail URL
-        </label>
-        <input
-          type="url"
-          id="thumbnailUrl"
-          value={thumbnailUrl}
-          onChange={(e) => setThumbnailUrl(e.target.value)}
-          placeholder="https://example.com/thumbnail.jpg"
-          className="mt-1 sm:mt-2 block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm sm:text-sm sm:leading-6 px-3"
-        />
-      </div>
+      <ImageUpload
+        value={thumbnailUrl}
+        onChange={setThumbnailUrl}
+        label="Thumbnail Image (optional)"
+        bucket="workshop-resources"
+      />
 
       <div>
         <label className="block text-sm font-medium text-gray-900 mb-2">

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Workshop } from "@/lib/types";
 import MarkdownEditor from "./MarkdownEditor";
+import ImageUpload from "./ImageUpload";
 
 interface WorkshopFormProps {
   workshop?: Workshop;
@@ -108,22 +109,12 @@ export default function WorkshopForm({
         </div>
       </div>
 
-      <div>
-        <label
-          htmlFor="imageUrl"
-          className="block text-sm font-medium text-gray-900"
-        >
-          Image URL (optional)
-        </label>
-        <input
-          type="url"
-          id="imageUrl"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          placeholder="https://example.com/image.jpg"
-          className="mt-1 sm:mt-2 block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm sm:text-sm sm:leading-6 px-3"
-        />
-      </div>
+      <ImageUpload
+        value={imageUrl}
+        onChange={setImageUrl}
+        label="Workshop Image (optional)"
+        bucket="workshop-images"
+      />
 
       <div>
         <label className="block text-sm font-medium text-gray-900 mb-2">

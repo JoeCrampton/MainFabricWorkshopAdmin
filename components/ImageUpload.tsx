@@ -38,9 +38,17 @@ export default function ImageUpload({
       return;
     }
 
-    // Validate file type
-    if (!file.type.startsWith("image/")) {
+    // Validate file type based on accept prop
+    const isImage = accept.includes("image");
+    const isVideo = accept.includes("video");
+
+    if (isImage && !file.type.startsWith("image/")) {
       setError("Please select an image file");
+      return;
+    }
+
+    if (isVideo && !file.type.startsWith("video/")) {
+      setError("Please select a video file");
       return;
     }
 
@@ -95,11 +103,19 @@ export default function ImageUpload({
 
       {value && (
         <div className="mb-3 relative inline-block">
-          <img
-            src={value}
-            alt="Preview"
-            className="h-32 w-auto rounded-lg border border-gray-300 object-cover"
-          />
+          {accept.includes("video") ? (
+            <video
+              src={value}
+              controls
+              className="h-32 w-auto rounded-lg border border-gray-300"
+            />
+          ) : (
+            <img
+              src={value}
+              alt="Preview"
+              className="h-32 w-auto rounded-lg border border-gray-300 object-cover"
+            />
+          )}
           <button
             type="button"
             onClick={handleRemove}
@@ -139,23 +155,11 @@ export default function ImageUpload({
       {error && <p className="mt-2 text-sm text-red-600">{error}</p>}
 
       <p className="mt-2 text-xs text-gray-500">
-        Max file size: {maxSizeMB}MB. Supported formats: JPG, PNG, GIF, WebP
+        Max file size: {maxSizeMB}MB.{" "}
+        {accept.includes("video")
+          ? "Supported formats: MP4, WebM, MOV"
+          : "Supported formats: JPG, PNG, GIF, WebP"}
       </p>
-
-      {!value && (
-        <div className="mt-3">
-          <label className="block text-xs font-medium text-gray-700 mb-1">
-            Or enter URL directly
-          </label>
-          <input
-            type="url"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            placeholder="https://example.com/image.jpg"
-            className="block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 text-sm px-3"
-          />
-        </div>
-      )}
     </div>
   );
 }

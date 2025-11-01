@@ -5,6 +5,7 @@ export interface Workshop {
   image_url: string | null;
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   duration: string;
+  shopify_product_id: number | null;
   created_at: string;
   updated_at: string;
 }
